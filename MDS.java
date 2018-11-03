@@ -214,24 +214,78 @@ public class MDS {
        prices of items.  Returns the sum of the net increases of the prices.
     */
     public Money priceHike(long l, long h, double rate) {
-    	
-    	SortedMap<Long, ItemDetails> itemRange = item.subMap(l, h);
-    	
-    	Set<Long> map = itemRange.keySet();
-    	Iterator<Long> it = map.iterator();
-    	Long id = 0l, carry = 0l;
-    	Money p;
-    	
-    	while(it.hasNext()){
-    		id = it.next();
-    		p = item.get(id).price;
-    		if(p.c>0){
-    			
-    		}
-    	}
-    	
-    	return new Money();
+
+
+//		SortedMap<Long, ItemDetails> itemRange = item.subMap(l, h);
+//		Set<Long> map = itemRange.keySet();
+//		Iterator<Long> it = map.iterator();
+//    	Long id = 0l, carry = 0l;
+//    	Money p;
+//
+//    	while(it.hasNext()){
+//    		id = it.next();
+//    		p = item.get(id).price;
+//    		if(p.c>0){
+//
+//    		}
+//    	}
+//
+//    	return new Money();
+		Money preSum = new Money();
+		Money postSum = new Money();
+		Money newPrice = new Money();
+		for(long i=l;i<=h;i++){
+			if(this.item.containsKey(i)){
+				ItemDetails idObj = this.item.get(i);
+//				System.out.println("Old price for id "+i+ " is "+idObj.price);
+				preSum = this.addPrices(preSum,idObj.price);
+//				System.out.println("after adding prev sum "+preSum);
+				newPrice = this.incrementPrice(idObj.price,rate);
+//				System.out.println("new price after increment for id "+i+ " is "+newPrice);
+				postSum = this.addPrices(postSum,newPrice);
+//				System.out.println("after adding post sum "+postSum);
+			}
+		}
+		return getDifference(postSum,preSum);
+
+
     }
+
+	private Money getDifference(Money postSum, Money preSum) {
+    	double m1 = Double.parseDouble(postSum.toString());
+    	double m2 = Double.parseDouble(preSum.toString());
+//    	System.out.println("the increment is "+(m1-m2));
+    	Money m = new Money(String.valueOf(m1-m2));
+    	System.out.print(m);
+    	return m;
+	}
+
+
+	public Money incrementPrice(Money m1, double rate){
+    	Long d = m1.d;
+    	int c = m1.c;
+		double dRate = d+(d*rate/(double)100);
+		Money dolInc = new Money(String.valueOf(dRate));
+
+		c = c+(int)(c*rate/(double)100);;
+		Money CenInc = new Money(c/100,c%100);
+		return addPrices(dolInc,CenInc);
+	}
+
+
+    public Money addPrices(Money m1,Money m2){
+    	long carryOver = 0L;
+    	Money sumPrices = new Money();
+    	sumPrices.c = m1.c+m2.c;
+    	if(sumPrices.c > 100L){
+    		carryOver = sumPrices.c/100;
+    		sumPrices.c = sumPrices.c%100;
+		}else{
+    		carryOver = 0;
+		}
+		sumPrices.d = m1.d + m2.d + carryOver;
+    	return sumPrices;
+	}
 
     /*
       h. RemoveNames(id, list): Remove elements of list from the description of id.
@@ -253,7 +307,15 @@ public class MDS {
 		    int len = part.length;
 		    if(len < 1) { d = 0; c = 0; }
 		    else if(part.length == 1) { d = Long.parseLong(s);  c = 0; }
-		    else { d = Long.parseLong(part[0]);  c = Integer.parseInt(part[1]); }
+		    else {
+		    	d = Long.parseLong(part[0]);
+		    	if(part[1].length() >= 2){
+					c = Integer.parseInt(part[1].substring(0,2));
+				}else{
+					c = Integer.parseInt(part[1])*10;
+				}
+
+		    }
 		}
 		public long dollars() { return d; }
 		public int cents() { return c; }
@@ -268,7 +330,13 @@ public class MDS {
 				return 0;
 			}
 		}
-		public String toString() { return d + "." + c; }
+		public String toString() {
+			if(c > 9){
+				return d + "." + c;
+			}else{
+				return d + ".0" + c;
+			}
+		}
     }
     
     public static class ItemDetails{
