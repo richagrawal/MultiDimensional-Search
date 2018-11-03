@@ -40,12 +40,43 @@ public class MDS {
     */
     public int insert(long id, Money price, java.util.List<Long> list) {
     	
+    	int insRetVal = 0;
     	ItemDetails detail = new ItemDetails(price, list);
 		
     	Iterator<Long> it = list.iterator();
     	HashSet<Long> idSet = new HashSet<Long>();
+    	
+    	
+    	if(item.containsKey(id)){
+    		HashSet<Long> descDel = item.get(id).desc;
+    		Iterator<Long> itDel = descDel.iterator();
+    		if(list.size()>0){
+	    		while(itDel.hasNext()){
+	    			Long delId = itDel.next();
+	    			if(descLookup.containsKey(delId)){
+	    				idSet = descLookup.get(delId);
+	    				if(idSet.size()==1){
+	    					descLookup.remove(delId);
+	    				}
+	    				else{
+	    					idSet.remove(id);
+	    				}
+	    			}
+	    		}
+    		}
+    		else{
+    			detail.desc = descDel;
+    		}
+    		item.put(id, detail);
+    	}
+    	else{
+    		item.put(id, detail);
+    		insRetVal = 1;
+    	}
+    	
     	while(it.hasNext()){
     		Long descId = it.next();
+    		idSet = new HashSet<Long>();
     		if(descLookup.containsKey(descId)){
     			idSet = descLookup.get(descId);
     			
@@ -54,14 +85,7 @@ public class MDS {
 			descLookup.put(descId, idSet);
     	}
     	
-    	if(item.containsKey(id)){
-    		item.put(id, detail);
-    		return 0;
-    	}
-    	else{
-    		item.put(id, detail);
-    		return 1;
-    	}
+    	return insRetVal;
     }
 
     // b. Find(id): return price of item with given id (or 0, if not found).
