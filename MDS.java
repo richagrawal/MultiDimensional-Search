@@ -241,6 +241,7 @@ public class MDS {
 				preSum = this.addPrices(preSum,idObj.price);
 //				System.out.println("after adding prev sum "+preSum);
 				newPrice = this.incrementPrice(idObj.price,rate);
+				this.item.get(i).price = newPrice;
 //				System.out.println("new price after increment for id "+i+ " is "+newPrice);
 				postSum = this.addPrices(postSum,newPrice);
 //				System.out.println("after adding post sum "+postSum);
