@@ -19,8 +19,8 @@ public class LP3Driver {
         } else {
             in = new Scanner(System.in);
         }
-        boolean VERBOSE = false;
-        if (args.length > 1) { VERBOSE = Boolean.parseBoolean(args[1]); }
+        boolean VERBOSE = true;
+        //if (args.length > 1) { VERBOSE = Boolean.parseBoolean(args[1]); }
 
         String operation = "";
         long lineno = 0;

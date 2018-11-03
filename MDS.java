@@ -196,7 +196,7 @@ public class MDS {
     		Long id = 0l;
     		Money p = new Money();
     		int count = 0;
-    		if(it.hasNext()){
+    		while(it.hasNext()){
     			id = it.next();
     			p = item.get(id).price;
     			if((p.compareTo(low)>-1)&&(p.compareTo(high)<1)){
@@ -257,7 +257,6 @@ public class MDS {
     	double m2 = Double.parseDouble(preSum.toString());
 //    	System.out.println("the increment is "+(m1-m2));
     	Money m = new Money(String.valueOf(m1-m2));
-    	System.out.print(m);
     	return m;
 	}
 
